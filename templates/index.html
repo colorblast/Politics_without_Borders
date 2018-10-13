@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>politics w/out borders</title>
+        <meta charset=utf-8>
+        <link rel="stylesheet" href=static/css/spectre/spectre.min.css>
+        <link rel="stylesheet" href="static/css/main.css">
+        <script>
+            function showResults(){
+                // do stuff
+            }
+
+            function sendXMLHTTPRequest(){
+                var req = new XMLHttpRequest();
+                req.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200){
+                        showResults();
+                    }
+                };
+                req.open("POST", "/api", true);
+                req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                req.send("topics="+topics);
+            }
+
+            topics = {};
+            document.addEventListener("DOMContentLoaded", function(){
+                topic_creator = document.getElementById("topic_creator");
+                topic_creator.addEventListener("keydown", function(e){
+                    if(e.keyCode === 13){
+                        e.preventDefault();
+                        //console.log(topic_creator.value);
+                        if(!(topic_creator in topics)){
+                            topics[topic_creator.value] = true;
+                            topics_dom = document.getElementsByClassName("topics")[0];
+                            sample = document.getElementsByClassName("chip")[0].cloneNode(true);
+                            sample.classList.remove("not-visible");
+                            sample.id = topic_creator.value;
+                            sample.innerHTML = topic_creator.value;
+                            //console.log(sample);
+                            topics_dom.appendChild(sample);
+                            topic_creator.value = "";
+                        }
+                    }
+                });
+                search_btn = document.getElementById("searcher");
+                search_btn.addEventListener("click", function(){
+                    sendXMLHTTPRequest(topics);
+                });
+            });
+
+            function updateVal(element){
+                if(topics[element.id]){
+                    element.classList.remove("bg-primary");
+                } else {
+                    element.classList.add("bg-primary");
+                }
+                topics[element.id] = !(topics[element.id]);
+            }
+
+        </script>
+    </head>
+    <body>
+            <span class="chip not-visible bg-primary" onclick="updateVal(this);">Default Chip
+            </span>
+        <div class="container" id="first_container">
+            <div class="columns">
+                <div class="column col-12 col-xs-12">
+                        <h1 class="text-center">
+                            politics w/out borders
+                            <br>
+                            <small><mark>why?</mark></small>
+                        </h1>
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <input class="form-input" type="text" id="topic_creator" placeholder="enter a topic you care about...">
+                                <button class="btn btn-primary searcher" type="submit">Search</button>
+                            </div>
+                        </form>
+                        <div class="topics">
+                            <p>If you feel positive about the issue, keep the issue <span class="text-primary">purple</span>. If you feel negatively about the issue, click it to make it <span class="text-gray">gray</span>.</p>
+                        </div>
+                        <div class="results">
+                            
+                        </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
