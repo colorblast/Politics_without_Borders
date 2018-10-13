@@ -6,20 +6,25 @@
         <link rel="stylesheet" href=static/css/spectre/spectre.min.css>
         <link rel="stylesheet" href="static/css/main.css">
         <script>
-            function showResults(){
+            function showResults(res){
                 // do stuff
+                alert("finished");
+                console.log("finished");
             }
 
-            function sendXMLHTTPRequest(){
+            function sendXMLHTTPRequest(topics, zip){
                 var req = new XMLHttpRequest();
                 req.onreadystatechange = function() {
                     if(this.readyState == 4 && this.status == 200){
-                        showResults();
+                        showResults(req.response);
                     }
+                    /*else{
+                        alert(xhr.response);
+                    }*/
                 };
                 req.open("POST", "/api", true);
                 req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                req.send("topics="+topics);
+                req.send("topics="+JSON.stringify(topics)+"&zip="+zip);
             }
 
             topics = {};
@@ -42,9 +47,10 @@
                         }
                     }
                 });
-                search_btn = document.getElementById("searcher");
+                search_btn = document.getElementsByClassName("searcher")[0];
+                zip = document.getElementById("zip");
                 search_btn.addEventListener("click", function(){
-                    sendXMLHTTPRequest(topics);
+                    sendXMLHTTPRequest(topics, zip);
                 });
             });
 
@@ -73,7 +79,8 @@
                         <form class="form-horizontal">
                             <div class="form-group">
                                 <input class="form-input" type="text" id="topic_creator" placeholder="enter a topic you care about...">
-                                <button class="btn btn-primary searcher" type="submit">Search</button>
+                                <input class="form-input" type="text" pattern="[0-9]{5}" id="zip" />
+                                <button class="btn btn-primary searcher" type="button">Search</button>
                             </div>
                         </form>
                         <div class="topics">
